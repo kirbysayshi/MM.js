@@ -1,3 +1,10 @@
+/*
+ * MarkMeter
+ *
+ *
+ *
+ */
+
 // singleton, booyah!
 
 (function(){
@@ -9,7 +16,7 @@
 		,last = +new Date()
 		,lastString = ""
 	
-	,FPSM = function(target){
+	,MM = function(target){
 		target = target || 60;
 		if (counter++ > limit){
 			var now = +new Date();
@@ -24,6 +31,6 @@
 		return [fps, deviance, lastString];
 	};
 	
-	window.FPSM = FPSM;
+	window.MM = MM;
 	
 })();
