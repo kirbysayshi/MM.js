@@ -26,8 +26,9 @@
  * Can be used to count frames, time, whatever, for simple monitoring.
  * 
  * Usage:
- *     var m = MM(60); // m contains [marks per second, n% of 60 MPS, delta from last poll]
- *     console.log(  m[0] + 'mps, ' + m[1] + "% of target, " + m[2] + "ms"; );
+ *     var m = MM(60); // m contains: 
+ * 	       // [marks per second, n% of 60 MPS, average time per frame, delta from last poll]
+ *     console.log(  m[0] + 'mps, ' + m[1] + "% of target, " + m[2] + "ms, " + m[3] + "ms"; );
  *
  * No instantiation is necessary, as it is a singleton. Continual instantiation
  * will not break anything, but would be performance prohibitive.
@@ -43,24 +44,25 @@ var MM = (function(){
 		,last = +new Date() // the last time polled
 		,now = +new Date() // uh...
 		,temp = 0 // raw mps
+		,avgf = 0 // avg time per frame
 		,delta = 0 // ms since last poll
 	
 	,MM = function(target){
 		target = target || 60;
 		if (counter++ > limit){
 			now = +new Date();
-			delta = now - last
-			temp = (1000 / (delta / counter)).toFixed(2);
+			delta = now - last;
+			avgf = delta / counter;
+			temp = (1000 / (avgf)).toFixed(2);
 			last = now;
-			deviance = ((temp / target)*100);
+			deviance = ((temp / target)*100).toFixed(2);
 			mps = temp;
 			counter = 0;
 		}
 
-		return [mps, deviance, delta];
+		return [mps, deviance, avgf.toFixed(2), delta];
 	};
-	
-	//window.MM = MM;
+
 	return MM;
 	
 })();
