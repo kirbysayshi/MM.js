@@ -34,7 +34,7 @@
  * 
  */
 
-(function(){
+var MM = (function(){
 	
 	var	mps = 0 // marks per second
 		,deviance = 0 // actual % of target marks per second
@@ -48,18 +48,19 @@
 	,MM = function(target){
 		target = target || 60;
 		if (counter++ > limit){
-			counter = 0;
 			now = +new Date();
 			delta = now - last
-			temp = 1000 / (delta / counter);
+			temp = (1000 / (delta / counter)).toFixed(2);
 			last = now;
-			deviance = ((temp.toFixed(2) / target)*100);
-			mps = temp.toFixed(2);
+			deviance = ((temp / target)*100);
+			mps = temp;
+			counter = 0;
 		}
 
 		return [mps, deviance, delta];
 	};
 	
-	window.MM = MM;
+	//window.MM = MM;
+	return MM;
 	
 })();
