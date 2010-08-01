@@ -30,37 +30,48 @@
  * 	       // [marks per second, n% of 60 MPS, average time per frame, delta from last poll]
  *     console.log(  m[0] + 'mps, ' + m[1] + "% of target, " + m[2] + "ms, " + m[3] + "ms"; );
  *
- * No instantiation is necessary, as it is a singleton. Continual instantiation
- * will not break anything, but would be performance prohibitive.
+ * No instantiation is necessary, as it is a singleton, and only returns an array.
  * 
  */
 
 var MM = (function(){
 	
+	// let's use the fastest array we can find
+	var MMArrayType = null;
+	if(typeof Float32Array != 'undefined') {
+		MMArrayType = Float32Array;
+	} else if(typeof WebGLFloatArray != 'undefined') {
+		MMArrayType = WebGLFloatArray;
+	} else {
+		MMArrayType = Array;
+	}
+	
 	var	mps = 0 // marks per second
 		,deviance = 0 // actual % of target marks per second
-		,limit = 20 // polling interval: compute every 20 times mark is called
-		,counter = 0 // how close to the limit we currently are
+		,counter = 0 // how close to the polling interval	 we currently are
 		,last = +new Date() // the last time polled
 		,now = +new Date() // uh...
 		,temp = 0 // raw mps
 		,avgf = 0 // avg time per frame
 		,delta = 0 // ms since last poll
+		,ans = new MMArrayType(4); // [mps, deviance, avg time per frame, ms since last poll]
 	
-	,MM = function(target){
-		target = target || 60;
-		if (counter++ > limit){
+	,MM = function(target, pInterval){
+		target = target || 60; // target FPS
+		pInterval = pInterval || 20; // polling interval: compute every 20 times mark is called
+		if (counter++ > pInterval){
 			now = +new Date();
 			delta = now - last;
-			avgf = delta / counter;
-			temp = (1000 / (avgf)).toFixed(2);
+			avgf = (delta / counter).toFixed(2);
 			last = now;
-			deviance = ((temp / target)*100).toFixed(2);
-			mps = temp;
+			ans[0] = 1000 / avgf;
+			ans[1] = ((temp / target)*100).toFixed(2);
+			ans[2] = avgf;
+			ans[3] = delta;
 			counter = 0;
 		}
 
-		return [mps, deviance, avgf.toFixed(2), delta];
+		return ans;
 	};
 
 	return MM;
