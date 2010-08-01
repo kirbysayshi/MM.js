@@ -54,7 +54,7 @@ var MM = (function(){
 		,temp = 0 // raw mps
 		,avgf = 0 // avg time per frame
 		,delta = 0 // ms since last poll
-		,ans = new MMArrayType(4); // [mps, deviance, avg time per frame, ms since last poll]
+		,ans = new MMArrayType(4) // [mps, deviance, avg time per frame, ms since last poll]
 	
 	,MM = function(target, pInterval){
 		target = target || 60; // target FPS
